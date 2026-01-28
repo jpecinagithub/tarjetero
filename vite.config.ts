@@ -1,57 +1,65 @@
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// Replace 'repo-name' with your actual repository name for GitHub Pages
-// Or use './' for relative paths which works well with HashRouter
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg', 'data/*'],
+
+      // Si NO tienes esos assets, no los declares.
+      // Si quieres, deja solo los que existen.
+      includeAssets: ['data/*'],
+
       manifest: {
-        name: 'LocalDoc Explorer',
-        short_name: 'DocExplorer',
-        description: 'Visualizador de documentos y fotos locales',
+        name: 'TARJETERO',
+        short_name: 'TARJETERO',
+        description: 'Visualizador de documentos locales (PDF) en modo offline',
         theme_color: '#2563eb',
         background_color: '#f8fafc',
         display: 'standalone',
+
+        // Importante para GH Pages + base "./"
+        start_url: './',
+        scope: './',
+
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: 'pwa-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
           }
         ]
       },
+
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,pdf,jpg,jpeg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,pdf,jpg,jpeg,webmanifest}'],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.pathname.startsWith('/data/'),
+            // Para que funcione en localhost y en /tarjetero/ de GH Pages
+            urlPattern: ({ url }) => url.pathname.includes('/data/'),
             handler: 'CacheFirst',
             options: {
               cacheName: 'local-data-cache',
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30
               },
               cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       }
     })
-  ],
-  base: './', // Using relative base for easier GH Pages deployment
+  ]
 });
