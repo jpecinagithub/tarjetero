@@ -1,8 +1,6 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -15,12 +13,3 @@ root.render(
     <App />
   </React.StrictMode>
 );
-
-// PWA Service Worker Registration
-if ('serviceWorker' in navigator && (import.meta as any).env?.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => {
-      console.error('SW registration failed: ', err);
-    });
-  });
-}
